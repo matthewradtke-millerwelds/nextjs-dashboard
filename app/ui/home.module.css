@@ -1,0 +1,11 @@
+/*
+* This .shape class would be accessed as if it was an object to apply styling to the components.
+* Benefit fo css modules: locally scope CSS classes to components and reducing risk of style conflicts
+*/
+.shape {
+    height: 0;
+    width: 0;
+    border-bottom: 30px solid black;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+  }
