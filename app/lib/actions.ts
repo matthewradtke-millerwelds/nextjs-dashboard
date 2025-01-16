@@ -26,11 +26,16 @@ export async function createInvoice(formData: FormData) {
 
     const amountInCents = amount * 100;
     const date = new Date().toISOString().split('T')[0];
-
-    await sql`
+    try {
+        await sql`
     INSERT INTO invoices (customer_id, amount, status, date)
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
   `;
+    } catch (error) {
+        return {
+            message: `An error occurred updating the database: ${error}`
+        }
+    }
     revalidatePath('/dashboard/invoices'); //Since you're updating the data displayed in the invoices route, you want to clear this cache and trigger a new request to the server
     redirect('/dashboard/invoices');
     // Test it out:
@@ -53,24 +58,36 @@ export async function updateInvoice(id: string, formData: FormData) {
     });
 
     const amountInCents = amount * 100;
-
-    await sql`
-    UPDATE invoices
-    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-    WHERE id = ${id}
-  `;
+    try {
+        await sql`
+        UPDATE invoices
+        SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+        WHERE id = ${id}
+      `;
+    } catch(error) {
+        return {
+            message: `An error occurred updating the database: ${error}`
+        }
+    }
 
     revalidatePath('/dashboard/invoices');// clear the client cache and make a new server request.
     redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
-
-    await sql`
+    
+    try {
+        await sql`
         Delete FROM invoices
         WHERE id = ${id}
     `;
+    } catch (error) {
+        return {
+            message: `An error occurred updating the database: ${error}`
+        }
+    }
 
     revalidatePath('/dashboard/invoices');// clear the client cache and make a new server request.
     //redirect('/dashboard/invoices');
+    return {message:`Succesfully deleted record ${id}`}
 }
